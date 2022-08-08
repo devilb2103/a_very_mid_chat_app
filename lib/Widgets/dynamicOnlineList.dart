@@ -13,9 +13,13 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-final ScrollController controller = ScrollController();
+//final ScrollController onlineListController1 = ScrollController();
 
 class onlineList extends StatelessWidget {
+  onlineList({Key? key, required this.controller}) : super(key: key);
+
+  final ScrollController? controller;
+
   final List users = [
     'user 1',
     'user 2',
@@ -41,7 +45,7 @@ class onlineList extends StatelessWidget {
       child: ScrollConfiguration(
         behavior: MyCustomScrollBehavior(),
         child: ListView.builder(
-            controller: controller,
+            controller: ScrollController(),
             physics: const BouncingScrollPhysics(),
             itemCount: users.length,
             itemBuilder: (context, index) {
@@ -71,11 +75,11 @@ class onlineListItem extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            borderRadius: const BorderRadius.all(Radius.circular(3)),
             color: customColorSwatches.swatch4,
           ),
           height: 30,
-          width: 220,
+          width: 250,
           child: Text(
             users[index],
             textAlign: TextAlign.center,

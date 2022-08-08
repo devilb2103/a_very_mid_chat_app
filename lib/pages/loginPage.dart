@@ -7,7 +7,7 @@ import 'package:rest_api_chat_app/customColorSwatch.dart';
 import 'package:rest_api_chat_app/dynamicUserData.dart';
 
 class loginPage extends StatelessWidget {
-  loginPage({Key? key}) : super(key: key);
+  const loginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +15,7 @@ class loginPage extends StatelessWidget {
     //
     //variables
     final controller = TextEditingController();
+    final ScrollController onlineListController2 = ScrollController();
     //
     //
     //functions
@@ -45,55 +46,60 @@ class loginPage extends StatelessWidget {
                   color: customColorSwatches.swatch2,
                   height: double.infinity,
                   width: 270,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 40),
-                      Text(
-                        "A",
-                        style: TextStyle(
-                          color: customColorSwatches.swatch5,
-                          fontSize: 30,
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(height: 24),
+                        Text(
+                          "A",
+                          style: TextStyle(
+                            color: customColorSwatches.swatch5,
+                            fontSize: 30,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "VERY",
-                        style: TextStyle(
-                          color: customColorSwatches.swatch5,
-                          fontSize: 30,
+                        Text(
+                          "VERY",
+                          style: TextStyle(
+                            color: customColorSwatches.swatch5,
+                            fontSize: 30,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "MID",
-                        style: TextStyle(
+                        Text(
+                          "MID",
+                          style: TextStyle(
+                              height: 1,
+                              color: customColorSwatches.swatch5,
+                              fontSize: 75,
+                              letterSpacing: 9,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "CHAT APP",
+                          style: TextStyle(
                             height: 1,
                             color: customColorSwatches.swatch5,
-                            fontSize: 75,
-                            letterSpacing: 9,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "CHAT APP",
-                        style: TextStyle(
-                          height: 1,
-                          color: customColorSwatches.swatch5,
-                          fontSize: 30,
+                            fontSize: 30,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 60),
-                      Text(
-                        "Online",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            height: 1,
-                            color: Colors.lightBlueAccent,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(height: 20),
-                      onlineList(),
-                    ],
+                        SizedBox(height: 30),
+                        Divider(color: customColorSwatches.swatch4),
+                        SizedBox(height: 10),
+                        Text(
+                          "Online",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              height: 1,
+                              color: Colors.lightBlueAccent,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(height: 20),
+                        onlineList(controller: onlineListController2),
+                      ],
+                    ),
                   ),
                 ),
                 //
@@ -114,7 +120,7 @@ class loginPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 15),
-                      TextButton(
+                      ElevatedButton(
                         onPressed: () => {saveUserData()},
                         style: ButtonStyle(
                           backgroundColor:

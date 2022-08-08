@@ -6,7 +6,7 @@ import 'package:window_size/window_size.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   setWindowMinSize(const Size(1280, 720));
-  setWindowMaxSize(const Size(1280, 720));
+
   runApp(const MyApp());
 }
 
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       //home: home(),
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        '/': ((context) => loginPage()),
+        '/': ((context) => const loginPage()),
         '/chatPage': ((context) => const chatPage()),
       },
     );
