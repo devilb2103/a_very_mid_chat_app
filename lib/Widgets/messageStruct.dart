@@ -1,6 +1,13 @@
 class messageStruct {
-  String sender;
-  String message;
+  final String sender;
+  final String message;
 
-  messageStruct(this.sender, this.message);
+  messageStruct({required this.sender, required this.message});
+
+  factory messageStruct.fromJson(Map<String, dynamic> msg) {
+    return messageStruct(
+      sender: msg['user'],
+      message: msg['message'],
+    );
+  }
 }

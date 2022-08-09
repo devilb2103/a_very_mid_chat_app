@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:ui';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:rest_api_chat_app/Widgets/customTextField.dart';
 import 'package:rest_api_chat_app/Widgets/messageStruct.dart';
 import 'package:rest_api_chat_app/customColorSwatch.dart';
+import 'package:rest_api_chat_app/dynamicUserData.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -24,30 +27,72 @@ class messageBoard extends StatefulWidget {
 }
 
 class _messageBoardState extends State<messageBoard> {
-  static List<messageStruct> messages = [];
+  //
+  List<messageStruct> messages = [];
+
+  final IO.Socket socket = IO.io(
+      "https://your-mother-chat-app.herokuapp.com",
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .build());
+
   bool isMine = false;
+
   ScrollController messageBoardController = ScrollController();
   TextEditingController messageBoxController = TextEditingController();
+
   late FocusNode messageBoxFocus;
 
   @override
   void initState() {
     super.initState();
+    connect();
+    socket.emit("signin", dynamicUserData.name);
+
     Timer(const Duration(milliseconds: 60), () {
       messageBoardController
           .jumpTo(messageBoardController.position.maxScrollExtent);
     });
     messageBoxFocus = FocusNode();
-    //messageBoardController
   }
 
-  void updateMessage(String msg) {
+  void connect() {
+    socket.connect();
+    socket.onConnect((data) => debugPrint("connected"));
+    socket.onConnectError((data) => debugPrint("connection error"));
+    socket.onDisconnect((data) => debugPrint("disconnected"));
+    socket.on(
+        "broadcast",
+        (data) => setMessage(
+            Map<String, dynamic>.from(data)
+                .entries
+                .elementAt(0)
+                .value
+                .toString(),
+            Map<String, dynamic>.from(data)
+                .entries
+                .elementAt(1)
+                .value
+                .toString()));
+  }
+
+  void setMessage(String sender, String message) {
+    setState(() {
+      messages.add(messageStruct(sender: sender, message: message));
+    });
+  }
+
+  void sendMessage(String msg) {
     if (messageBoxController.text.isEmpty) {
       return;
     }
-    setState(() {
-      messages.add(messageStruct("sender", msg));
+
+    socket.emit("message", {
+      'user': dynamicUserData.name,
+      'message': msg,
     });
+
     Timer(const Duration(milliseconds: 60), () {
       messageBoardController
           .jumpTo(messageBoardController.position.maxScrollExtent);
@@ -84,7 +129,7 @@ class _messageBoardState extends State<messageBoard> {
             hintText: "Your message here",
             charLimit: 100000,
             onSubmit: (value) => {
-                  updateMessage(messageBoxController.text),
+                  sendMessage(messageBoxController.text.trim()),
                 }),
       ],
     );

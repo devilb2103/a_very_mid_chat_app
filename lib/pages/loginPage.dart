@@ -21,7 +21,7 @@ class loginPage extends StatelessWidget {
     //functions
     void saveUserData() {
       if (controller.text.length > 2) {
-        dynamicUserData.name = controller.text;
+        dynamicUserData.name = controller.text.trim();
         debugPrint(dynamicUserData.name);
         Navigator.pushNamed(context, '/chatPage');
       }

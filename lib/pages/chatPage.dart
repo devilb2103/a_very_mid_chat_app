@@ -5,6 +5,8 @@ import 'package:rest_api_chat_app/Widgets/dynamicOnlineList.dart';
 import 'package:rest_api_chat_app/customColorSwatch.dart';
 import 'dart:async';
 
+import 'package:rest_api_chat_app/dynamicUserData.dart';
+
 class chatPage extends StatelessWidget {
   const chatPage({Key? key}) : super(key: key);
 
