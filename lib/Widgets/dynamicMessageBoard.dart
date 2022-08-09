@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rest_api_chat_app/Widgets/customTextField.dart';
 import 'package:rest_api_chat_app/Widgets/messageStruct.dart';
@@ -31,7 +32,8 @@ class _messageBoardState extends State<messageBoard> {
   List<messageStruct> messages = [];
 
   final IO.Socket socket = IO.io(
-      "https://your-mother-chat-app.herokuapp.com",
+      //"https://your-mother-chat-app.herokuapp.com",
+      "http://localhost:5000",
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
@@ -58,6 +60,7 @@ class _messageBoardState extends State<messageBoard> {
   }
 
   void disconnect() {
+    socket.emit("clientDisconnect");
     socket.disconnect();
     Navigator.pushNamed(context, '/');
   }
@@ -80,6 +83,8 @@ class _messageBoardState extends State<messageBoard> {
                   .value
                   .toString()));
     });
+    socket.on("userChange",
+        (data) => debugPrint(List<dynamic>.from(data).toString()));
     socket.onConnectError((data) => debugPrint("connection error"));
     socket.onDisconnect((data) => debugPrint("disconnected"));
   }
@@ -87,6 +92,10 @@ class _messageBoardState extends State<messageBoard> {
   void setMessage(String sender, String message) {
     setState(() {
       messages.add(messageStruct(sender: sender, message: message));
+    });
+    Timer(const Duration(milliseconds: 60), () {
+      messageBoardController
+          .jumpTo(messageBoardController.position.maxScrollExtent);
     });
   }
 
@@ -100,10 +109,6 @@ class _messageBoardState extends State<messageBoard> {
       'message': msg,
     });
 
-    Timer(const Duration(milliseconds: 60), () {
-      messageBoardController
-          .jumpTo(messageBoardController.position.maxScrollExtent);
-    });
     messageBoxController.clear();
     messageBoxFocus.requestFocus();
   }
@@ -131,6 +136,18 @@ class _messageBoardState extends State<messageBoard> {
         ),
         const SizedBox(height: 20),
         Row(children: [
+          SizedBox(
+            width: 50,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 15),
+              child: IconButton(
+                splashColor: Colors.transparent,
+                icon: const Icon(Icons.logout),
+                onPressed: () => {disconnect()},
+                color: customColorSwatches.swatch6,
+              ),
+            ),
+          ),
           Expanded(
             child: customTextField(
                 focusNode: messageBoxFocus,
@@ -141,17 +158,6 @@ class _messageBoardState extends State<messageBoard> {
                       sendMessage(messageBoxController.text.trim()),
                     }),
           ),
-          SizedBox(
-            child: Material(
-              color: Colors.transparent,
-              child: IconButton(
-                splashColor: Colors.transparent,
-                icon: const Icon(Icons.logout),
-                onPressed: () => {disconnect()},
-                color: customColorSwatches.swatch6,
-              ),
-            ),
-          )
         ])
       ],
     );

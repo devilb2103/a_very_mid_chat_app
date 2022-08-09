@@ -115,6 +115,7 @@ class loginPage extends StatelessWidget {
                         width: 210,
                         child: customTextField(
                           hintText: "Name",
+                          charLimit: 20,
                           controller: nameController,
                           onSubmit: (value) => {saveUserData()},
                         ),

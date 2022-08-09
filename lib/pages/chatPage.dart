@@ -14,10 +14,6 @@ class chatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ScrollController onlineListController1 = ScrollController();
 
-    void logout() {
-      Navigator.pushNamed(context, '/');
-    }
-
     return Scaffold(
       backgroundColor: customColorSwatches.swatch1,
       body: Center(
@@ -54,15 +50,17 @@ class chatPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         onlineList(controller: onlineListController1),
-                        const SizedBox(height: 30),
-                        Material(
-                          color: Colors.transparent,
-                          child: IconButton(
-                            splashColor: Colors.transparent,
-                            icon: const Icon(Icons.logout),
-                            onPressed: () => {logout()},
-                            color: customColorSwatches.swatch6,
-                          ),
+                        const SizedBox(height: 20),
+                        Divider(color: customColorSwatches.swatch4),
+                        const SizedBox(height: 20),
+                        Text(
+                          "Connected as ${dynamicUserData.name}",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              height: 1,
+                              color: customColorSwatches.swatch6,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 21),
                       ],
