@@ -57,24 +57,31 @@ class _messageBoardState extends State<messageBoard> {
     messageBoxFocus = FocusNode();
   }
 
+  void disconnect() {
+    socket.disconnect();
+    Navigator.pushNamed(context, '/');
+  }
+
   void connect() {
     socket.connect();
-    socket.onConnect((data) => debugPrint("connected"));
+    socket.onConnect((data) {
+      debugPrint("connected");
+      socket.on(
+          "broadcast",
+          (data) => setMessage(
+              Map<String, dynamic>.from(data)
+                  .entries
+                  .elementAt(0)
+                  .value
+                  .toString(),
+              Map<String, dynamic>.from(data)
+                  .entries
+                  .elementAt(1)
+                  .value
+                  .toString()));
+    });
     socket.onConnectError((data) => debugPrint("connection error"));
     socket.onDisconnect((data) => debugPrint("disconnected"));
-    socket.on(
-        "broadcast",
-        (data) => setMessage(
-            Map<String, dynamic>.from(data)
-                .entries
-                .elementAt(0)
-                .value
-                .toString(),
-            Map<String, dynamic>.from(data)
-                .entries
-                .elementAt(1)
-                .value
-                .toString()));
   }
 
   void setMessage(String sender, String message) {
@@ -123,14 +130,29 @@ class _messageBoardState extends State<messageBoard> {
           ),
         ),
         const SizedBox(height: 20),
-        customTextField(
-            focusNode: messageBoxFocus,
-            controller: messageBoxController,
-            hintText: "Your message here",
-            charLimit: 100000,
-            onSubmit: (value) => {
-                  sendMessage(messageBoxController.text.trim()),
-                }),
+        Row(children: [
+          Expanded(
+            child: customTextField(
+                focusNode: messageBoxFocus,
+                controller: messageBoxController,
+                hintText: "Your message here",
+                charLimit: 100000,
+                onSubmit: (value) => {
+                      sendMessage(messageBoxController.text.trim()),
+                    }),
+          ),
+          SizedBox(
+            child: Material(
+              color: Colors.transparent,
+              child: IconButton(
+                splashColor: Colors.transparent,
+                icon: const Icon(Icons.logout),
+                onPressed: () => {disconnect()},
+                color: customColorSwatches.swatch6,
+              ),
+            ),
+          )
+        ])
       ],
     );
   }

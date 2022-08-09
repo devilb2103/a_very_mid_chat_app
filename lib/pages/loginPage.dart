@@ -14,18 +14,18 @@ class loginPage extends StatelessWidget {
     //
     //
     //variables
-    final controller = TextEditingController();
+    final nameController = TextEditingController();
     final ScrollController onlineListController2 = ScrollController();
     //
     //
     //functions
     void saveUserData() {
-      if (controller.text.length > 2) {
-        dynamicUserData.name = controller.text.trim();
+      if (nameController.text.length > 2) {
+        dynamicUserData.name = nameController.text.trim();
         debugPrint(dynamicUserData.name);
         Navigator.pushNamed(context, '/chatPage');
       }
-      controller.text = "";
+      nameController.text = "";
     }
 
     return Scaffold(
@@ -115,7 +115,7 @@ class loginPage extends StatelessWidget {
                         width: 210,
                         child: customTextField(
                           hintText: "Name",
-                          controller: controller,
+                          controller: nameController,
                           onSubmit: (value) => {saveUserData()},
                         ),
                       ),

@@ -15,7 +15,6 @@ class chatPage extends StatelessWidget {
     final ScrollController onlineListController1 = ScrollController();
 
     void logout() {
-      //send http post request for logout
       Navigator.pushNamed(context, '/');
     }
 
