@@ -22,7 +22,6 @@ class loginPage extends StatelessWidget {
     void saveUserData() {
       if (nameController.text.length > 2) {
         dynamicUserData.name = nameController.text.trim();
-        debugPrint(dynamicUserData.name);
         Navigator.pushNamed(context, '/chatPage');
       }
       nameController.text = "";
@@ -47,12 +46,14 @@ class loginPage extends StatelessWidget {
                   height: double.infinity,
                   width: 270,
                   child: Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(45),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         SizedBox(height: 24),
+                        Divider(color: customColorSwatches.swatch4),
+                        SizedBox(height: 60),
                         Text(
                           "A",
                           style: TextStyle(
@@ -84,20 +85,20 @@ class loginPage extends StatelessWidget {
                             fontSize: 30,
                           ),
                         ),
-                        SizedBox(height: 30),
+                        SizedBox(height: 60),
                         Divider(color: customColorSwatches.swatch4),
-                        SizedBox(height: 10),
-                        Text(
-                          "Online",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              height: 1,
-                              color: Colors.lightBlueAccent,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(height: 20),
-                        onlineList(controller: onlineListController2),
+                        // SizedBox(height: 10),
+                        // Text(
+                        //   "Online",
+                        //   textAlign: TextAlign.left,
+                        //   style: TextStyle(
+                        //       height: 1,
+                        //       color: Colors.lightBlueAccent,
+                        //       fontSize: 18,
+                        //       fontWeight: FontWeight.w600),
+                        // ),
+                        // SizedBox(height: 20),
+                        // onlineList(controller: onlineListController2),
                       ],
                     ),
                   ),

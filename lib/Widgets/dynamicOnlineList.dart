@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:rest_api_chat_app/customColorSwatch.dart';
+import 'package:rest_api_chat_app/onlineUsers.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -13,51 +14,51 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-//final ScrollController onlineListController1 = ScrollController();
-
 class onlineList extends StatelessWidget {
-  onlineList({Key? key, required this.controller}) : super(key: key);
+  const onlineList({Key? key, required this.controller}) : super(key: key);
 
   final ScrollController? controller;
 
-  final List users = [
-    'user 1',
-    'user 2',
-    'user 3',
-    'user 4',
-    'user 1',
-    'user 2',
-    'user 3',
-    'user 4',
-    'user 1',
-    'user 2',
-    'user 3',
-    'user 4',
-    'user 1',
-    'user 2',
-    'user 3',
-    'user 4',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ScrollConfiguration(
-        behavior: MyCustomScrollBehavior(),
-        child: ListView.builder(
-            controller: ScrollController(),
-            physics: const BouncingScrollPhysics(),
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              return onlineListItem(
-                users: users,
-                index: index,
-              );
-            }),
-      ),
+    return ValueListenableBuilder(
+      valueListenable: onlineUsersRef.usernames,
+      builder: (context, value, _) {
+        return Expanded(
+          child: ScrollConfiguration(
+            behavior: MyCustomScrollBehavior(),
+            child: ListView.builder(
+                controller: ScrollController(),
+                physics: const BouncingScrollPhysics(),
+                itemCount: onlineUsersRef.usernames.value.length,
+                itemBuilder: (context, index) {
+                  return onlineListItem(
+                    users: onlineUsersRef.usernames.value,
+                    index: index,
+                  );
+                }),
+          ),
+        );
+      },
     );
   }
 }
+
+// Expanded(
+//       child: ScrollConfiguration(
+//         behavior: MyCustomScrollBehavior(),
+//         child: ListView.builder(
+//             controller: ScrollController(),
+//             physics: const BouncingScrollPhysics(),
+//             itemCount: onlineUsers.usernames.length,
+//             itemBuilder: (context, index) {
+//               return onlineListItem(
+//                 users: onlineUsers.usernames,
+//                 index: index,
+//               );
+//             }),
+//       ),
+//     );
 
 class onlineListItem extends StatelessWidget {
   const onlineListItem({

@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:convert';
+import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rest_api_chat_app/Widgets/customTextField.dart';
 import 'package:rest_api_chat_app/Widgets/messageStruct.dart';
 import 'package:rest_api_chat_app/customColorSwatch.dart';
 import 'package:rest_api_chat_app/dynamicUserData.dart';
+import 'package:rest_api_chat_app/onlineUsers.dart';
+import 'dynamicOnlineList.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
@@ -32,8 +33,8 @@ class _messageBoardState extends State<messageBoard> {
   List<messageStruct> messages = [];
 
   final IO.Socket socket = IO.io(
-      //"https://your-mother-chat-app.herokuapp.com",
-      "http://localhost:5000",
+      "https://your-mother-chat-app.herokuapp.com",
+      //"http://localhost:5000",
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
@@ -60,8 +61,8 @@ class _messageBoardState extends State<messageBoard> {
   }
 
   void disconnect() {
-    socket.emit("clientDisconnect");
     socket.disconnect();
+    onlineUsersRef.usernames.value.clear();
     Navigator.pushNamed(context, '/');
   }
 
@@ -83,8 +84,25 @@ class _messageBoardState extends State<messageBoard> {
                   .value
                   .toString()));
     });
-    socket.on("userChange",
-        (data) => debugPrint(List<dynamic>.from(data).toString()));
+    socket.on(
+        "userChange",
+        (data) => {
+              // debugPrint(List<dynamic>.from(data)
+              //     .toString()
+              //     .substring(1, List<dynamic>.from(data).toString().length - 1)
+              //     .split(',')
+              //     .toString()),
+              onlineUsersRef.usernames.value = List<dynamic>.from(data)
+                  .toString()
+                  .substring(1, List<dynamic>.from(data).toString().length - 1)
+                  .split(',')
+
+              //   usernames = List<dynamic>.from(data)
+              //       .toString()
+              //       .substring(1, List<dynamic>.from(data).toString().length - 1)
+              //       .split(','),
+            });
+
     socket.onConnectError((data) => debugPrint("connection error"));
     socket.onDisconnect((data) => debugPrint("disconnected"));
   }
