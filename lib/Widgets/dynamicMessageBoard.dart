@@ -33,8 +33,8 @@ class _messageBoardState extends State<messageBoard> {
   List<messageStruct> messages = [];
 
   final IO.Socket socket = IO.io(
-      //"https://your-mother-chat-app.herokuapp.com",
-      "http://localhost:5000",
+      "https://your-mother-chat-app.herokuapp.com",
+      //"http://localhost:5000",
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
