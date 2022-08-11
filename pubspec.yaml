@@ -32,7 +32,6 @@ dependencies:
 
   bitsdojo_window:
   window_manager:
-  flutter_acrylic:
 
   # window_size:
   #   git:
