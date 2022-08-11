@@ -54,8 +54,8 @@ class chatPage extends StatelessWidget {
                         Divider(color: customColorSwatches.swatch4),
                         const SizedBox(height: 20),
                         Text(
-                          "Connected as ${dynamicUserData.name}",
-                          textAlign: TextAlign.left,
+                          "Connected as \n${dynamicUserData.name}",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               height: 1,
                               color: customColorSwatches.swatch6,

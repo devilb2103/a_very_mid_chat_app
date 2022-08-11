@@ -73,16 +73,22 @@ class _messageBoardState extends State<messageBoard> {
       socket.on(
           "broadcast",
           (data) => setMessage(
-              Map<String, dynamic>.from(data)
-                  .entries
-                  .elementAt(0)
-                  .value
-                  .toString(),
-              Map<String, dynamic>.from(data)
-                  .entries
-                  .elementAt(1)
-                  .value
-                  .toString()));
+                Map<String, dynamic>.from(data)
+                    .entries
+                    .elementAt(0)
+                    .value
+                    .toString(),
+                Map<String, dynamic>.from(data)
+                    .entries
+                    .elementAt(1)
+                    .value
+                    .toString(),
+                Map<String, dynamic>.from(data)
+                    .entries
+                    .elementAt(2)
+                    .value
+                    .toString(),
+              ));
     });
     socket.on(
         "userChange",
@@ -96,25 +102,23 @@ class _messageBoardState extends State<messageBoard> {
                   .toString()
                   .substring(1, List<dynamic>.from(data).toString().length - 1)
                   .split(',')
-
-              //   usernames = List<dynamic>.from(data)
-              //       .toString()
-              //       .substring(1, List<dynamic>.from(data).toString().length - 1)
-              //       .split(','),
+            });
+    socket.on(
+        "socketId",
+        (data) => {
+              dynamicUserData.socketId = data.toString(),
+              debugPrint(dynamicUserData.socketId),
             });
 
     socket.onConnectError((data) => debugPrint("connection error"));
     socket.onDisconnect((data) => debugPrint("disconnected"));
   }
 
-  void setMessage(String sender, String message) {
+  void setMessage(String sender, String id, String message) {
     setState(() {
-      messages.add(messageStruct(sender: sender, message: message));
+      messages.add(messageStruct(sender: sender, id: id, message: message));
     });
-    Timer(const Duration(milliseconds: 60), () {
-      messageBoardController
-          .jumpTo(messageBoardController.position.maxScrollExtent);
-    });
+    scrollDownMessageBoard();
   }
 
   void sendMessage(String msg) {
@@ -124,11 +128,24 @@ class _messageBoardState extends State<messageBoard> {
 
     socket.emit("message", {
       'user': dynamicUserData.name,
+      'id': dynamicUserData.socketId,
       'message': msg,
     });
 
     messageBoxController.clear();
     messageBoxFocus.requestFocus();
+  }
+
+  void scrollDownMessageBoard() {
+    double maxScroll = messageBoardController.position.maxScrollExtent;
+    double currentScroll = messageBoardController.position.pixels;
+
+    if (maxScroll - currentScroll <= 200) {
+      Timer(const Duration(milliseconds: 60), () {
+        messageBoardController
+            .jumpTo(messageBoardController.position.maxScrollExtent);
+      });
+    }
   }
 
   @override
@@ -197,7 +214,9 @@ class messageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: (messages[index].id == dynamicUserData.socketId)
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
       child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

@@ -44,22 +44,6 @@ class onlineList extends StatelessWidget {
   }
 }
 
-// Expanded(
-//       child: ScrollConfiguration(
-//         behavior: MyCustomScrollBehavior(),
-//         child: ListView.builder(
-//             controller: ScrollController(),
-//             physics: const BouncingScrollPhysics(),
-//             itemCount: onlineUsers.usernames.length,
-//             itemBuilder: (context, index) {
-//               return onlineListItem(
-//                 users: onlineUsers.usernames,
-//                 index: index,
-//               );
-//             }),
-//       ),
-//     );
-
 class onlineListItem extends StatelessWidget {
   const onlineListItem({
     Key? key,
