@@ -40,8 +40,6 @@ class _messageBoardState extends State<messageBoard> {
           .disableAutoConnect()
           .build());
 
-  bool isMine = false;
-
   ScrollController messageBoardController = ScrollController();
   TextEditingController messageBoxController = TextEditingController();
 
@@ -165,7 +163,6 @@ class _messageBoardState extends State<messageBoard> {
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 return messageCard(
-                  isMine: isMine,
                   messages: messages,
                   index: index,
                 );
@@ -206,12 +203,10 @@ class _messageBoardState extends State<messageBoard> {
 class messageCard extends StatelessWidget {
   const messageCard({
     Key? key,
-    required this.isMine,
     required this.messages,
     required this.index,
   }) : super(key: key);
 
-  final bool isMine;
   final int index;
   final List<messageStruct> messages;
 
@@ -221,45 +216,51 @@ class messageCard extends StatelessWidget {
       alignment: (messages[index].id == dynamicUserData.socketId)
           ? Alignment.centerRight
           : Alignment.centerLeft,
-      child: Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          color: customColorSwatches.swatch3,
-          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 10,
-                  right: 10,
-                  top: 5,
-                  bottom: 0,
-                ),
-                child: Text(
-                  messages[index].sender,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.lightBlueAccent,
+      child: Padding(
+        padding: EdgeInsets.only(
+            left: (messages[index].id == dynamicUserData.socketId) ? 270 : 0,
+            right: (messages[index].id == dynamicUserData.socketId) ? 0 : 270),
+        child: Card(
+            elevation: 1,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            color: customColorSwatches.swatch3,
+            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                    right: 10,
+                    top: 5,
+                    bottom: 0,
+                  ),
+                  child: Text(
+                    messages[index].sender,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.lightBlueAccent,
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 10,
-                  right: 30,
-                  top: 20,
-                  bottom: 20,
-                ),
-                child: Text(
-                  messages[index].message,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: customColorSwatches.swatch5,
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                    right: 30,
+                    top: 20,
+                    bottom: 20,
+                  ),
+                  child: Text(
+                    messages[index].message,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: customColorSwatches.swatch5,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          )),
+              ],
+            )),
+      ),
     );
   }
 }
