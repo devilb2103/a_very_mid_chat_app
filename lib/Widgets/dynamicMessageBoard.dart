@@ -33,8 +33,8 @@ class _messageBoardState extends State<messageBoard> {
   List<messageStruct> messages = [];
 
   final IO.Socket socket = IO.io(
-      //"https://your-mother-chat-app.herokuapp.com",
-      "http://localhost:5000",
+      "https://your-mother-chat-app.herokuapp.com",
+      //"http://localhost:5000",
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
@@ -61,6 +61,7 @@ class _messageBoardState extends State<messageBoard> {
   void disconnect() {
     socket.disconnect();
     onlineUsersRef.usernames.value.clear();
+    dynamicUserData.socketId = "";
     Navigator.pushNamed(context, '/');
   }
 
@@ -117,7 +118,7 @@ class _messageBoardState extends State<messageBoard> {
   }
 
   void setMessage(String sender, String id, String message, String time) {
-    debugPrint(id);
+    //debugPrint(id);
     if (id == "") {
       return;
     }
