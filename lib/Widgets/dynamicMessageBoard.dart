@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:intl/date_time_patterns.dart';
+import 'package:intl/intl.dart';
 import 'package:rest_api_chat_app/Widgets/customTextField.dart';
 import 'package:rest_api_chat_app/Widgets/messageStruct.dart';
 import 'package:rest_api_chat_app/customColorSwatch.dart';
 import 'package:rest_api_chat_app/dynamicUserData.dart';
 import 'package:rest_api_chat_app/onlineUsers.dart';
-import 'dynamicOnlineList.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
@@ -33,8 +33,8 @@ class _messageBoardState extends State<messageBoard> {
   List<messageStruct> messages = [];
 
   final IO.Socket socket = IO.io(
-      "https://your-mother-chat-app.herokuapp.com",
-      //"http://localhost:5000",
+      //"https://your-mother-chat-app.herokuapp.com",
+      "http://localhost:5000",
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
@@ -71,22 +71,26 @@ class _messageBoardState extends State<messageBoard> {
       socket.on(
           "broadcast",
           (data) => setMessage(
-                Map<String, dynamic>.from(data)
-                    .entries
-                    .elementAt(0)
-                    .value
-                    .toString(),
-                Map<String, dynamic>.from(data)
-                    .entries
-                    .elementAt(1)
-                    .value
-                    .toString(),
-                Map<String, dynamic>.from(data)
-                    .entries
-                    .elementAt(2)
-                    .value
-                    .toString(),
-              ));
+              Map<String, dynamic>.from(data)
+                  .entries
+                  .elementAt(0)
+                  .value
+                  .toString(),
+              Map<String, dynamic>.from(data)
+                  .entries
+                  .elementAt(1)
+                  .value
+                  .toString(),
+              Map<String, dynamic>.from(data)
+                  .entries
+                  .elementAt(2)
+                  .value
+                  .toString(),
+              Map<String, dynamic>.from(data)
+                  .entries
+                  .elementAt(3)
+                  .value
+                  .toString()));
     });
     socket.on(
         "userChange",
@@ -112,14 +116,16 @@ class _messageBoardState extends State<messageBoard> {
     socket.onDisconnect((data) => debugPrint("disconnected"));
   }
 
-  void setMessage(String sender, String id, String message) {
+  void setMessage(String sender, String id, String message, String time) {
     debugPrint(id);
     if (id == "") {
       return;
     }
     setState(() {
-      messages.add(messageStruct(sender: sender, id: id, message: message));
+      messages.add(
+          messageStruct(sender: sender, id: id, message: message, time: time));
     });
+    //debugPrint(DateTime.parse(time); -----------------------
     scrollDownMessageBoard();
   }
 
@@ -132,6 +138,7 @@ class _messageBoardState extends State<messageBoard> {
       'user': dynamicUserData.name,
       'id': dynamicUserData.socketId,
       'message': msg,
+      'time': DateTime.now().toUtc().toString(),
     });
 
     messageBoxController.clear();
@@ -210,6 +217,41 @@ class messageCard extends StatelessWidget {
   final int index;
   final List<messageStruct> messages;
 
+  String getTimeStamp() {
+    final DateTime time = DateTime.parse(messages[index].time).toLocal();
+    final DateTime curTime = DateTime.now().toLocal();
+
+    if (time.year == curTime.year) {
+      if (time.month == curTime.month) {
+        if (time.day == curTime.day) {
+          return DateFormat()
+              .add_jm()
+              .format(DateTime.parse(messages[index].time).toLocal())
+              .toString();
+        } else {
+          return DateFormat()
+              .add_d()
+              .add_MMM()
+              .format(DateTime.parse(messages[index].time).toLocal())
+              .toString();
+        }
+      } else {
+        return DateFormat()
+            .add_d()
+            .add_MMM()
+            .format(DateTime.parse(messages[index].time).toLocal())
+            .toString();
+      }
+    } else {
+      return DateFormat()
+          .add_d()
+          .add_MMM()
+          .add_y()
+          .format(DateTime.parse(messages[index].time).toLocal())
+          .toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -226,35 +268,52 @@ class messageCard extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             color: customColorSwatches.swatch3,
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-            child: Stack(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    right: 10,
-                    top: 5,
-                    bottom: 0,
-                  ),
-                  child: Text(
-                    messages[index].sender,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.lightBlueAccent,
+                Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10,
+                        right: 10,
+                        top: 5,
+                        bottom: 0,
+                      ),
+                      child: Text(
+                        messages[index].sender,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10,
+                        right: 30,
+                        top: 20,
+                        bottom: 20,
+                      ),
+                      child: Text(
+                        messages[index].message,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: customColorSwatches.swatch5,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    right: 30,
-                    top: 20,
-                    bottom: 20,
-                  ),
+                  padding:
+                      const EdgeInsets.only(left: 10, bottom: 10, right: 21),
                   child: Text(
-                    messages[index].message,
+                    (getTimeStamp()),
                     style: TextStyle(
-                      fontSize: 16,
-                      color: customColorSwatches.swatch5,
+                      fontSize: 9,
+                      height: -0.5,
+                      color: customColorSwatches.swatch6,
                     ),
                   ),
                 ),

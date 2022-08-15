@@ -32,6 +32,7 @@ dependencies:
 
   bitsdojo_window:
   window_manager:
+  intl:
 
   # window_size:
   #   git:
