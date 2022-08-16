@@ -50,11 +50,8 @@ class _messageBoardState extends State<messageBoard> {
     super.initState();
     connect();
     socket.emit("signin", dynamicUserData.name);
+    socket.emit("requestOldMessages");
 
-    Timer(const Duration(milliseconds: 60), () {
-      messageBoardController
-          .jumpTo(messageBoardController.position.maxScrollExtent);
-    });
     messageBoxFocus = FocusNode();
   }
 
@@ -96,11 +93,6 @@ class _messageBoardState extends State<messageBoard> {
     socket.on(
         "userChange",
         (data) => {
-              // debugPrint(List<dynamic>.from(data)
-              //     .toString()
-              //     .substring(1, List<dynamic>.from(data).toString().length - 1)
-              //     .split(',')
-              //     .toString()),
               onlineUsersRef.usernames.value = List<dynamic>.from(data)
                   .toString()
                   .substring(1, List<dynamic>.from(data).toString().length - 1)
@@ -112,9 +104,34 @@ class _messageBoardState extends State<messageBoard> {
               dynamicUserData.socketId = data.toString(),
               debugPrint(dynamicUserData.socketId),
             });
+    socket.on(
+        "retrieveOldMessages",
+        (data) => {
+              recieveOldMessages(data),
+            });
 
     socket.onConnectError((data) => debugPrint("connection error"));
     socket.onDisconnect((data) => debugPrint("disconnected"));
+  }
+
+  void recieveOldMessages(List<dynamic> old) {
+    List<messageStruct> currentMessages = messages;
+    List<dynamic> oldMessages = old;
+    List<messageStruct> newList = [];
+    for (var i = 0; i < oldMessages.length; i++) {
+      final String user = oldMessages[i]['user'];
+      final String id = oldMessages[i]['id'];
+      final String message = oldMessages[i]['message'];
+      final String time = oldMessages[i]['time'];
+
+      final item =
+          messageStruct(sender: user, id: id, message: message, time: time);
+      newList.add(item);
+    }
+    newList.addAll(currentMessages);
+    messages = newList;
+    setState(() {});
+    scrollDownMessageBoard();
   }
 
   void setMessage(String sender, String id, String message, String time) {
