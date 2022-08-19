@@ -1,4 +1,4 @@
-##MID CHAT APP
+## MID CHAT APP
 
 functional socket based chat app written with flutter and dart
 users **can**:
