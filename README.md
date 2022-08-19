@@ -1,6 +1,7 @@
 ## MID CHAT APP
 
 functional socket based chat app written with flutter and dart
+
 users **can**:
   - join a room
   - view online users using a dynamic statefull online list
