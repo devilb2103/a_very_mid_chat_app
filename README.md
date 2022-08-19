@@ -1,16 +1,14 @@
-# rest_api_chat_app
+##MID CHAT APP
 
-A new Flutter project.
+functional socket based chat app written with flutter and dart
+users **can**:
+  - join a room
+  - view online users using a dynamic statefull online list
+  - retrieve old messages that are saved on the server as is
+  - use the n-word without ip bans
+  - look at beautiful ui (~~whose design that i did not steal from someone on dribble~~)
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+users **cannot**:
+  - create new rooms
+  - dm users
+  - retrieve old mssages if the server goes down (because messages arent saved using a 3rd party db service LOL)
