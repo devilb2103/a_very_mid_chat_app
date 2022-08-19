@@ -6,7 +6,7 @@ users **can**:
   - view online users using a dynamic statefull online list
   - retrieve old messages that are saved on the server as is
   - use the n-word without ip bans
-  - look at beautiful ui (~~whose design that i did not steal from someone on dribble~~)
+  - look at beautiful ui (~~whose design i totally did not steal from someone on dribble~~)
 
 users **cannot**:
   - create new rooms
