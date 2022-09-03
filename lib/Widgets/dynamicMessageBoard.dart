@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_time_patterns.dart';
 import 'package:intl/intl.dart';
 import 'package:rest_api_chat_app/Widgets/customTextField.dart';
@@ -10,6 +11,7 @@ import 'package:rest_api_chat_app/customColorSwatch.dart';
 import 'package:rest_api_chat_app/dynamicUserData.dart';
 import 'package:rest_api_chat_app/onlineUsers.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:window_manager/window_manager.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -31,6 +33,7 @@ class messageBoard extends StatefulWidget {
 class _messageBoardState extends State<messageBoard> {
   //
   List<messageStruct> messages = [];
+  String lastTextBoxValue = "";
 
   final IO.Socket socket = IO.io(
       "https://your-mother-chat-app.herokuapp.com",
@@ -47,17 +50,27 @@ class _messageBoardState extends State<messageBoard> {
 
   @override
   void initState() {
+    messageBoxController.addListener(_messageBoxListener);
     super.initState();
     connect();
     socket.emit("signin", dynamicUserData.name);
     socket.emit("requestOldMessages");
 
     messageBoxFocus = FocusNode();
+
+    //check for events triggering typing status to false
+  }
+
+  @override
+  void dispose() {
+    messageBoxController.removeListener(_messageBoxListener);
+    super.dispose();
   }
 
   void disconnect() {
     socket.disconnect();
     onlineUsersRef.usernames.value.clear();
+    onlineUsersRef.typers.value.clear();
     dynamicUserData.socketId = "";
     Navigator.pushNamed(context, '/');
   }
@@ -109,9 +122,36 @@ class _messageBoardState extends State<messageBoard> {
         (data) => {
               recieveOldMessages(data),
             });
+    socket.on(
+        "typers",
+        (data) => {
+              onlineUsersRef.typers.value = List<dynamic>.from(data)
+                  .toString()
+                  .substring(1, List<dynamic>.from(data).toString().length - 1)
+                  .split(','),
+            });
 
     socket.onConnectError((data) => debugPrint("connection error"));
     socket.onDisconnect((data) => debugPrint("disconnected"));
+  }
+
+  void setTypingStatus(bool typing) {
+    if (typing) {
+      socket.emit("addTyper", dynamicUserData.name.toString());
+    } else {
+      socket.emit("removeTyper", dynamicUserData.name.toString());
+    }
+  }
+
+  void _messageBoxListener() {
+    if (lastTextBoxValue.length >= messageBoxController.text.length) {
+      //debugPrint("Not Typing");
+      setTypingStatus(false);
+    } else {
+      //debugPrint("Typing");
+      setTypingStatus(true);
+    }
+    lastTextBoxValue = messageBoxController.text.toString();
   }
 
   void recieveOldMessages(List<dynamic> old) {
@@ -161,6 +201,7 @@ class _messageBoardState extends State<messageBoard> {
 
     messageBoxController.clear();
     messageBoxFocus.requestFocus();
+    setTypingStatus(false);
   }
 
   void scrollDownMessageBoard() {
@@ -219,9 +260,65 @@ class _messageBoardState extends State<messageBoard> {
                       sendMessage(messageBoxController.text.trim()),
                     }),
           ),
-        ])
+        ]),
+        TypingStatusLine(),
       ],
     );
+  }
+}
+
+class TypingStatusLine extends StatefulWidget {
+  const TypingStatusLine({Key? key}) : super(key: key);
+
+  @override
+  State<TypingStatusLine> createState() => _TypingStatusLineState();
+}
+
+class _TypingStatusLineState extends State<TypingStatusLine> {
+  @override
+  Widget build(BuildContext context) {
+    //
+    String returnTypingStatusLine(ValueNotifier<List<dynamic>> typers) {
+      String line = "";
+      List<String> user = [];
+      for (var i = 0; i < typers.value.length; i++) {
+        user.add(typers.value[i].toString());
+      }
+      for (var i = 0; i < user.length; i++) {
+        if (i == 0) {
+          line += user[i];
+        } else if (i == user.length - 1) {
+          line += " and${user[i]}";
+        } else {
+          line += ",${user[i]}";
+        }
+      }
+
+      //check for and
+      //if true then more than 2 or more users, else only 1 user.
+      //if true then as "are typing", else "is typing".
+      if (line.length > 1) {
+        if (line.contains("and")) {
+          line += " are typing...";
+        } else {
+          line += " is typing...";
+        }
+      }
+
+      return line;
+    }
+
+    return ValueListenableBuilder(
+        valueListenable: onlineUsersRef.typers,
+        builder: (context, value, _) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              returnTypingStatusLine(onlineUsersRef.typers),
+              style: TextStyle(color: Colors.white),
+            ),
+          );
+        });
   }
 }
 
