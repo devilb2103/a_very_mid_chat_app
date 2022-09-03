@@ -5,6 +5,7 @@ functional socket based chat app written with flutter and dart
 users **can**:
   - join a room
   - view online users using a dynamic statefull online list
+  - view live typing status of online users using a dynamic statefull status line
   - retrieve old messages that are saved on the server as is
   - use the n-word without ip bans
   - look at beautiful ui (~~whose design i totally did not steal from someone on dribble~~)
