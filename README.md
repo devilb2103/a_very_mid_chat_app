@@ -17,3 +17,4 @@ users **cannot**:
   - retrieve old mssages if the server goes down (because messages arent saved using a 3rd party db service LOL)
 
 ![](https://iili.io/iUfIwl.png)
+![](https://iili.io/iUfc8b.png)
