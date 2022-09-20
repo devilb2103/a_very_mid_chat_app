@@ -15,3 +15,5 @@ users **cannot**:
   - create new rooms
   - dm users
   - retrieve old mssages if the server goes down (because messages arent saved using a 3rd party db service LOL)
+
+![](https://iili.io/iUfIwl.png)
